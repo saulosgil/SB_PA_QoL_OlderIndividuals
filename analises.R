@@ -31,14 +31,8 @@ df <-
 plot_missing(df)
 
 # variáveis que irão no eixo Y
-variaveis <- c("hgs_max", 
-               "ts_max", 
-               "ansiedade_score",
-               "depressao_score",
-               "whoqol_fisico_escore_100",
-               "whoqol_psicol_escore_100",
-               "whoqol_social_escore_100",
-               "whoqol_ambiente_escore_100")
+variaveis <- c("ansiedade_score",
+               "depressao_score")
 
 
 for (y_var in variaveis) {
@@ -67,7 +61,7 @@ for (y_var in variaveis) {
 df <- 
   df |> 
   mutate(
-    sb_higher_6h = if_else(total_sb_hday >= 6, "highersb", "lowersb")
+    sb_higher_6h = if_else(total_sb_hday >= 6, "Higher SB", "Lower SB")
   )
 
 # count each category -------------------------------------------------------------------------
@@ -76,94 +70,65 @@ df |>
   count(sb_higher_6h)
 
 # analyses ------------------------------------------------------------------------------------
-# HGS -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = hgs_max, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
-
-testt <- t.test(hgs_max ~ sb_higher_6h, df)
-testt
-
-# TS -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = ts_max, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
-
-
-testt <- t.test(ts_max ~ sb_higher_6h, df)
-testt
-
 # depression -----------------------------------------------------------------------------------------
-df |> 
+dep <- 
+  df |> 
   tidyplot(x = sb_higher_6h, 
            y = depressao_score, 
            color = sb_higher_6h) |> 
   add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
+  add_mean_dot() +
+  labs(
+    y = "Beck Depression Inventory Score (a.u.)",
+  ) +
+  theme(axis.title.x = element_blank(),
+        legend.title = element_blank()) +
+  scale_y_continuous(breaks = seq(0, 30, 10)) +
+  coord_cartesian(ylim = c(0, 30))
+
+dep
 
 testt <- t.test(depressao_score ~ sb_higher_6h, df)
 testt
 
 # anxiety -----------------------------------------------------------------------------------------
-df |> 
+anx <- 
+  df |> 
   tidyplot(x = sb_higher_6h, 
            y = ansiedade_score, 
            color = sb_higher_6h) |> 
   add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
+  add_mean_dot()|> 
+  add_mean_dot() +
+  labs(
+    y = "Beck Anxiety Inventory Score (a.u.)",
+  ) +
+  theme(axis.title.x = element_blank(),
+        legend.title = element_blank()) +
+  scale_y_continuous(breaks = seq(0, 30, 10)) +
+  coord_cartesian(ylim = c(0, 30))
+
+anx
 
 testt <- t.test(ansiedade_score ~ sb_higher_6h, df)
 testt
 
-# WHO - fisico -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = whoqol_fisico_escore_100, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
+# Layout ------------------------------------------------------------------
+library(patchwork)
+dep/anx
 
-testt <- t.test(whoqol_fisico_escore_100 ~ sb_higher_6h, df)
-testt
+# plots of each MPSB and depression -----------------------------------------------------------
+# Fazer os plot de cada dominio de SB (categorizar >=4h/day)
+# Napping
+# Listening to music
+# Watching television
+# Talking using or not a smartphone when sited
+# Sit in car, bus or train
+# Sit in the church or the theater
 
-# WHO - mental -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = whoqol_psicol_escore_100, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
 
-testt <- t.test(whoqol_psicol_escore_100 ~ sb_higher_6h, df)
-testt
 
-# WHO - social -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = whoqol_social_escore_100, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
 
-testt <- t.test(whoqol_social_escore_100 ~ sb_higher_6h, df)
-testt
-
-# WHO - ambiente -----------------------------------------------------------------------------------------
-df |> 
-  tidyplot(x = sb_higher_6h, 
-           y = whoqol_ambiente_escore_100, 
-           color = sb_higher_6h) |> 
-  add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()
-
-testt <- t.test(whoqol_ambiente_escore_100 ~ sb_higher_6h, df)
-testt
 
 # Regression with significant outcome -------------------------------------------
 # ----------
@@ -175,23 +140,28 @@ summary(lm(depressao_score ~ df$total_sb_hday,data = df))
 # MPSB 
 # ----------
 # Napping
-# Listening to music
-# Watching television
-# Talking using or not a smartphone when sited
-# Sit in car, bus or train
-# Sit in the church or the theater
-
 summary(lm(depressao_score ~ df$total_soneca_minday,data = df))
 
+# Listening to music
 summary(lm(depressao_score ~ df$total_musica_minday,data = df))
 
+# Watching television
 summary(lm(depressao_score ~ df$total_tv_minday,data = df))
 
+# Talking using or not a smartphone when sited
 summary(lm(depressao_score ~ df$total_telefone_minday,data = df))
 
+# Sit in car, bus or train
 summary(lm(depressao_score ~ df$total_transporte_minday,data = df))
 
+# Sit in the church or the theater
 summary(lm(depressao_score ~ df$total_atvculturais_minday,data = df))
+
+
+
+
+
+
 
 
 
