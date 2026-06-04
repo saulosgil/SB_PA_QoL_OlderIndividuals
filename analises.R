@@ -72,8 +72,13 @@ df |>
 # analyses ------------------------------------------------------------------------------------
 # depression -----------------------------------------------------------------------------------------
 testt_dep <- t.test(depressao_score ~ sb_higher_6h, df)
+pvalue_dep <- format(testt_dep$p.value, digits = 1, scientific = FALSE)
 
-dep <- 
+if (pvalue_dep < 0.001) {
+  pvalue_dep <- "< 0.0001"
+}
+
+dep <-
   df |> 
   tidyplot(x = sb_higher_6h, 
            y = depressao_score, 
@@ -87,16 +92,18 @@ dep <-
         legend.title = element_blank()) +
   scale_y_continuous(breaks = seq(0, 30, 10)) +
   coord_cartesian(ylim = c(0, 30)) +
-  geom_hline(yintercept = 28, linetype = "dashed", color = "gray50", linewidth = 0.5) +
-  annotate("text", x = 1.5, y = 29, label = paste("p =", format(testt_dep$p.value, digits = 3)), 
-           size = 3.5, color = "black")
+  annotate("segment", x = 1.0, xend = 2.0, y = 28, yend = 28, color = "gray50", linewidth = 0.5, linetype = "solid") +
+  annotate("text", x = 1.5, y = 30, label = paste("P =", pvalue_dep)) # nolint: line_length_linter.
 
 dep
 
-testt_dep
-
 # anxiety -----------------------------------------------------------------------------------------
 testt_anx <- t.test(ansiedade_score ~ sb_higher_6h, df)
+pvalue_anx <- format(testt_anx$p.value, digits = 3, scientific = FALSE)
+
+if (pvalue_anx < 0.001) {
+  pvalue_anx <- "< 0.0001"
+}
 
 anx <- 
   df |> 
@@ -104,7 +111,6 @@ anx <-
            y = ansiedade_score, 
            color = sb_higher_6h) |> 
   add_boxplot(show_outliers = FALSE) |> 
-  add_mean_dot()|> 
   add_mean_dot() +
   labs(
     y = "Beck Anxiety Inventory Score (a.u.)",
@@ -113,9 +119,8 @@ anx <-
         legend.title = element_blank()) +
   scale_y_continuous(breaks = seq(0, 30, 10)) +
   coord_cartesian(ylim = c(0, 30)) +
-  geom_hline(yintercept = 28, linetype = "dashed", color = "gray50", linewidth = 0.5) +
-  annotate("text", x = 1.5, y = 29, label = paste("p =", format(testt_anx$p.value, digits = 3)), 
-           size = 3.5, color = "black")
+  annotate("segment", x = 1.0, xend = 2.0, y = 28, yend = 28, color = "gray50", linewidth = 0.5, linetype = "solid") +
+  annotate("text", x = 1.5, y = 30, label = paste("P =", pvalue_anx)) # nolint: line_length_linter.
 
 anx
 
@@ -127,7 +132,6 @@ dep/anx
 
 # plots of each MPSB and depression -----------------------------------------------------------
 # Fazer os plot de cada dominio de SB (categorizar pela mediana)
-
 df <- 
   df |> 
   mutate(
