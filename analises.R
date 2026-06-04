@@ -71,6 +71,8 @@ df |>
 
 # analyses ------------------------------------------------------------------------------------
 # depression -----------------------------------------------------------------------------------------
+testt_dep <- t.test(depressao_score ~ sb_higher_6h, df)
+
 dep <- 
   df |> 
   tidyplot(x = sb_higher_6h, 
@@ -84,14 +86,18 @@ dep <-
   theme(axis.title.x = element_blank(),
         legend.title = element_blank()) +
   scale_y_continuous(breaks = seq(0, 30, 10)) +
-  coord_cartesian(ylim = c(0, 30))
+  coord_cartesian(ylim = c(0, 30)) +
+  geom_hline(yintercept = 28, linetype = "dashed", color = "gray50", linewidth = 0.5) +
+  annotate("text", x = 1.5, y = 29, label = paste("p =", format(testt_dep$p.value, digits = 3)), 
+           size = 3.5, color = "black")
 
 dep
 
-testt <- t.test(depressao_score ~ sb_higher_6h, df)
-testt
+testt_dep
 
 # anxiety -----------------------------------------------------------------------------------------
+testt_anx <- t.test(ansiedade_score ~ sb_higher_6h, df)
+
 anx <- 
   df |> 
   tidyplot(x = sb_higher_6h, 
@@ -106,12 +112,14 @@ anx <-
   theme(axis.title.x = element_blank(),
         legend.title = element_blank()) +
   scale_y_continuous(breaks = seq(0, 30, 10)) +
-  coord_cartesian(ylim = c(0, 30))
+  coord_cartesian(ylim = c(0, 30)) +
+  geom_hline(yintercept = 28, linetype = "dashed", color = "gray50", linewidth = 0.5) +
+  annotate("text", x = 1.5, y = 29, label = paste("p =", format(testt_anx$p.value, digits = 3)), 
+           size = 3.5, color = "black")
 
 anx
 
-testt <- t.test(ansiedade_score ~ sb_higher_6h, df)
-testt
+testt_anx
 
 # Layout ------------------------------------------------------------------
 library(patchwork)
