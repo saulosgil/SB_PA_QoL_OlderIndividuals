@@ -210,6 +210,7 @@ painel_mpsb <-
 painel_masb <- 
   plots_sb$leitura_mediana + plots_sb$jogos_mediana +
   plots_sb$pc_mediana      + plots_sb$atvdomesticas_mediana +
+  plots_sb$pc_mediana      + plots_sb$atvdomesticas_mediana +
   plot_layout(ncol = 2) +
   plot_annotation(
     title = "Mentally-Active Sedentary Behaviors",
@@ -217,4 +218,17 @@ painel_masb <-
   )
 
 painel_mpsb
+ggsave(
+  "img/figure_3a.png",
+  device = NULL,
+  scale = 1,
+  dpi = 300
+)
+
 painel_masb
+ggsave(
+  "img/figure_3b.png",
+  device = NULL,
+  scale = 1,
+  dpi = 300
+)

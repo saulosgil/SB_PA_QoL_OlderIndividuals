@@ -128,4 +128,16 @@ testt_anx
 
 # Layout ------------------------------------------------------------------
 library(patchwork)
-dep/anx
+
+figure <- dep/anx
+figure
+
+ggsave(
+  "img/figure_1.png",
+  device = NULL,
+  scale = 1,
+  dpi = 300
+)
+
+
+
