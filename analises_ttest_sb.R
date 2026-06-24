@@ -61,7 +61,8 @@ for (y_var in variaveis) {
 df <- 
   df |> 
   mutate(
-    sb_higher_6h = if_else(total_sb_hday >= 6, "Higher SB", "Lower SB")
+    sb_higher_6h = if_else(total_sb_hday >= 6, "Higher SB", "Lower SB"),
+    sb_higher_6h = factor(sb_higher_6h, levels = c("Lower SB","Higher SB"))
   )
 
 # count each category -------------------------------------------------------------------------
@@ -93,7 +94,7 @@ dep <-
   scale_y_continuous(breaks = seq(0, 30, 10)) +
   coord_cartesian(ylim = c(0, 30)) +
   annotate("segment", x = 1.0, xend = 2.0, y = 28, yend = 28, color = "gray50", linewidth = 0.5, linetype = "solid") +
-  annotate("text", x = 1.5, y = 30, label = paste("P =", pvalue_dep)) # nolint: line_length_linter.
+  annotate("text", x = 1.5, y = 30, label = paste("P", pvalue_dep)) # nolint: line_length_linter.
 
 dep
 
