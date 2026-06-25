@@ -118,9 +118,26 @@ df <-
     )
   )
 
+# Ajuste nas covariaveis para colocar como fator --------------------------
+df <- df |> 
+  mutate(
+    raca  = as.factor(raca),
+    genero = as.factor(genero),
+    estado_civil  = as.factor(estado_civil),
+    obesidade = as.factor(obesidade),
+    has = as.factor(has),
+    dm2 = as.factor(dm2)
+  )
+  
 # Função: regressão linear por domínio --------------------------------------------------------
 run_sb_regression <- function(data, var_sb, outcome = "depressao_score",
-                              covariates = c("idade", "genero")) {
+                              covariates = c("idade",
+                                             "raca",
+                                             "genero",
+                                             "estado_civil",
+                                             "obesidade",
+                                             "has",
+                                             "dm2")) {
   formula_obj <- as.formula(
     paste(outcome, "~", var_sb, "+", paste(covariates, collapse = " + "))
   )
@@ -172,6 +189,8 @@ walk2(modelos_sb, names(modelos_sb), \(m, nome) {
 # Salvar cada tab_model em uma lista ----------------------------------------------------------
 tabs_sb <- vector("list", length(modelos_sb))
 names(tabs_sb) <- names(modelos_sb)
+
+Sys.setlocale("LC_ALL", "C")  # forçar o locale para UTF-8 antes do loop para resolver o erro de encoding/locale do sjPlot::tab_model
 
 for (i in seq_along(modelos_sb)) {
   nome  <- names(modelos_sb)[i]
