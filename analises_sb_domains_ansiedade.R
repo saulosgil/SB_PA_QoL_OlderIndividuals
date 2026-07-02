@@ -217,18 +217,64 @@ painel_masb <-
     theme = theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14))
   )
 
-painel_mpsb
-ggsave(
-  "img/figure_3a.png",
-  device = NULL,
-  scale = 1,
-  dpi = 300
-)
+# painel_mpsb
+# ggsave(
+#   "img/figure_3a.png",
+#   device = NULL,
+#   scale = 1,
+#   dpi = 300
+# )
+# 
+# painel_masb
+# ggsave(
+#   "img/figure_3b.png",
+#   device = NULL,
+#   scale = 1,
+#   dpi = 300
+# )
 
-painel_masb
-ggsave(
-  "img/figure_3b.png",
-  device = NULL,
-  scale = 1,
-  dpi = 300
-)
+# Outputs do teste t por domínio de SB ---------------------------------------------------------
+# Reaproveita a lista `dominios` já definida no script
+ttest_sb <- map(dominios, \(d) {
+  
+  formula_t <- reformulate(d$var, response = "ansiedade_score")
+  ttest     <- t.test(formula_t, data = df)
+  
+  # n e SD por grupo (Lower / Higher)
+  descritivos <- 
+    df |> 
+    filter(!is.na(.data[[d$var]]), !is.na(ansiedade_score)) |> 
+    group_by(grupo = .data[[d$var]]) |> 
+    summarise(
+      n  = n(),
+      sd = sd(ansiedade_score),
+      .groups = "drop"
+    )
+  
+  broom::tidy(ttest) |> 
+    transmute(
+      dominio      = d$label,
+      media_lower  = estimate1,
+      media_higher = estimate2,
+      sd_lower     = descritivos$sd[descritivos$grupo == "Lower"],
+      sd_higher    = descritivos$sd[descritivos$grupo == "Higher"],
+      n_lower      = descritivos$n[descritivos$grupo == "Lower"],
+      n_higher     = descritivos$n[descritivos$grupo == "Higher"],
+      dif_medias   = estimate,
+      ic95_inf     = conf.low,
+      ic95_sup     = conf.high,
+      t            = statistic,
+      gl           = parameter,
+      p_value      = p.value
+    )
+}) |> 
+  list_rbind() |> 
+  mutate(
+    p_formatado = if_else(
+      p_value < 0.0001,
+      "< 0.0001",
+      formatC(p_value, digits = 4, format = "f")
+    )
+  )
+
+ttest_sb

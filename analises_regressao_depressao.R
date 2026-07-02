@@ -139,7 +139,7 @@ run_sb_regression <- function(data, var_sb, outcome = "depressao_score",
                                              "has",
                                              "dm2")) {
   formula_obj <- as.formula(
-    paste(outcome, "~", var_sb, "+", paste(covariates, collapse = " + "))
+    paste(outcome, "~", var_sb)
   )
   lm(formula_obj, data = data)
 }
