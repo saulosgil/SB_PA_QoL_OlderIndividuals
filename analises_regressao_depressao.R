@@ -213,15 +213,3 @@ tabs_sb$leitura
 tabs_sb$jogos
 tabs_sb$pc
 tabs_sb$atvdomesticas
-
-
-
-
-
-
-
-
-
-
-
-
